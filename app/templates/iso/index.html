@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>ISO 9000 — Gestión de Calidad</h2>
+<ul class="nav nav-tabs mt-3" id="t" role="tablist">
+  <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#docs">📁 Documentos</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#aud">🔍 Auditorías</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#nc">⚠️ No conformidades</button></li>
+</ul>
+<div class="tab-content border border-top-0 p-3 bg-white">
+  <div class="tab-pane fade show active" id="docs">
+    {% if current_user.role in ['admin','supervisor'] %}
+    <form method="post" action="{{ url_for('iso.new_doc') }}" enctype="multipart/form-data" class="row g-2 mb-3">
+      <div class="col-md-3"><input class="form-control" name="title" placeholder="Título" required></div>
+      <div class="col-md-2"><select class="form-select" name="category">
+        <option>Procedimiento</option><option>Manual</option><option>Norma</option></select></div>
+      <div class="col-md-4"><input class="form-control" name="description" placeholder="Descripción"></div>
+      <div class="col-md-2"><input class="form-control" type="file" name="file"></div>
+      <div class="col-md-1"><button class="btn btn-pqms w-100">+</button></div>
+    </form>
+    {% endif %}
+    <table class="table"><thead><tr><th>Título</th><th>Categoría</th><th>Descripción</th><th>Archivo</th><th>Fecha</th></tr></thead>
+    <tbody>{% for d in docs %}<tr>
+      <td>{{d.title}}</td><td><span class="badge bg-secondary">{{d.category}}</span></td>
+      <td>{{d.description}}</td>
+      <td>{% if d.filename %}<a target="_blank" href="{{ url_for('static', filename='uploads/' ~ d.filename) }}">Ver</a>{% endif %}</td>
+      <td>{{d.created_at.strftime('%Y-%m-%d')}}</td>
+    </tr>{% else %}<tr><td colspan="5" class="text-center text-muted">Sin documentos</td></tr>{% endfor %}</tbody></table>
+  </div>
+  <div class="tab-pane fade" id="aud">
+    {% if current_user.role in ['admin','supervisor'] %}
+    <form method="post" action="{{ url_for('iso.new_audit') }}" class="row g-2 mb-3">
+      <div class="col-md-3"><input class="form-control" name="title" placeholder="Título auditoría" required></div>
+      <div class="col-md-2"><input type="date" class="form-control" name="date"></div>
+      <div class="col-md-3"><input class="form-control" name="auditor" placeholder="Auditor"></div>
+      <div class="col-md-3"><input class="form-control" name="findings" placeholder="Observaciones"></div>
+      <div class="col-md-1"><button class="btn btn-pqms w-100">+</button></div>
+    </form>
+    {% endif %}
+    <table class="table"><thead><tr><th>Fecha</th><th>Título</th><th>Auditor</th><th>Observaciones</th><th>Estado</th></tr></thead>
+    <tbody>{% for a in audits %}<tr>
+      <td>{{a.date}}</td><td>{{a.title}}</td><td>{{a.auditor}}</td><td>{{a.findings}}</td>
+      <td><span class="badge bg-info">{{a.status}}</span></td>
+    </tr>{% else %}<tr><td colspan="5" class="text-center text-muted">Sin auditorías</td></tr>{% endfor %}</tbody></table>
+  </div>
+  <div class="tab-pane fade" id="nc">
+    {% if current_user.role in ['admin','supervisor'] %}
+    <form method="post" action="{{ url_for('iso.new_nc') }}" class="row g-2 mb-3">
+      <div class="col-md-5"><input class="form-control" name="description" placeholder="Descripción no conformidad" required></div>
+      <div class="col-md-5"><input class="form-control" name="corrective_action" placeholder="Acción correctiva"></div>
+      <div class="col-md-2"><button class="btn btn-pqms w-100">Registrar</button></div>
+    </form>
+    {% endif %}
+    <table class="table"><thead><tr><th>#</th><th>Descripción</th><th>Acción correctiva</th><th>Estado</th><th>Fecha</th></tr></thead>
+    <tbody>{% for n in ncs %}<tr>
+      <td>{{n.id}}</td><td>{{n.description}}</td><td>{{n.corrective_action}}</td>
+      <td><span class="badge bg-warning text-dark">{{n.status}}</span></td>
+      <td>{{n.created_at.strftime('%Y-%m-%d')}}</td>
+    </tr>{% else %}<tr><td colspan="5" class="text-center text-muted">Sin no conformidades</td></tr>{% endfor %}</tbody></table>
+  </div>
+</div>
+{% endblock %}

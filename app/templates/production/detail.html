@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<a href="{{ url_for('production.list_batches') }}" class="btn btn-link mb-2"><i class="bi bi-arrow-left"></i> Volver</a>
+<h2>Lote {{b.code}}</h2>
+<div class="card border-0 shadow-sm mb-3"><div class="card-body row g-3">
+  <div class="col-md-3"><b>Fecha:</b><br>{{b.date}}</div>
+  <div class="col-md-3"><b>Tipo:</b><br>{{b.beer_type}}</div>
+  <div class="col-md-3"><b>Operario:</b><br>{{b.operator.full_name}}</div>
+  <div class="col-md-3"><b>% Alcohol:</b><br>{{b.alcohol_pct}}%</div>
+  <div class="col-md-3"><b>Estado:</b><br><span class="badge status-{{b.status|replace(' ','_')}}">{{b.status}}</span></div>
+  <div class="col-md-9"><b>Notas:</b><br>{{b.notes or '—'}}</div>
+</div></div>
+
+{% if current_user.role in ['admin','supervisor'] %}
+<form method="post" action="{{ url_for('production.change_status', batch_id=b.id) }}" class="card border-0 shadow-sm mb-3 p-3">
+  <label class="form-label">Cambiar estado</label>
+  <div class="d-flex gap-2">
+    <select class="form-select" name="status">
+      {% for s in ['En proceso','Aprobado','Rechazado'] %}<option {% if s==b.status %}selected{% endif %}>{{s}}</option>{% endfor %}
+    </select>
+    <button class="btn btn-pqms">Actualizar</button>
+  </div>
+</form>
+{% endif %}
+
+<div class="card border-0 shadow-sm"><div class="card-body">
+  <h5>Evidencias</h5>
+  {% if b.evidences %}
+  <div class="row g-2">{% for e in b.evidences %}
+    <div class="col-md-3"><a target="_blank" href="{{ url_for('static', filename='uploads/' ~ e.filename) }}"
+      class="card p-2 text-center small text-decoration-none">
+      <i class="bi bi-paperclip fs-3"></i> {{e.original_name}}</a></div>
+  {% endfor %}</div>
+  {% else %}<p class="text-muted mb-0">Sin evidencias adjuntas</p>{% endif %}
+</div></div>
+{% endblock %}

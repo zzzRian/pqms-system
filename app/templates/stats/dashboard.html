@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Control Estadístico de Calidad</h2>
+<form class="row g-2 my-3">
+  <div class="col-md-3"><select name="beer_type" class="form-select">
+    <option value="">Todos los tipos</option>
+    {% for t in beer_types %}<option value="{{t}}" {% if t==beer_filter %}selected{% endif %}>{{t}}</option>{% endfor %}
+  </select></div>
+  <div class="col-md-3"><select name="month" class="form-select">
+    <option value="">Todos los meses</option>
+    {% for m in month_options %}
+      <option value="{{m.value}}" {% if month_filter == m.value|string %}selected{% endif %}>{{m.label}}</option>
+    {% endfor %}
+  </select></div>
+  <div class="col-md-2"><button class="btn btn-pqms w-100">Filtrar</button></div>
+</form>
+
+{% if alerts %}
+<div class="alert alert-warning"><b>Alertas automáticas:</b>
+  <ul class="mb-0">{% for a in alerts %}<li>{{a}}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm h-100"><div class="card-body">
+      <h6 class="text-muted">Medidas estadísticas</h6>
+      {% if measures %}
+      <table class="table table-sm">
+        <tr><td>Muestras</td><td><b>{{measures.n}}</b></td></tr>
+        <tr><td>Media</td><td><b>{{ '%.3f'|format(measures.mean) }}</b></td></tr>
+        <tr><td>Mediana</td><td><b>{{ '%.3f'|format(measures.median) }}</b></td></tr>
+        <tr><td>Moda</td><td><b>{{ '%.3f'|format(measures.mode) if measures.mode is not none else '-' }}</b></td></tr>
+        <tr><td>Rango</td><td><b>{{ '%.3f'|format(measures.range) }}</b></td></tr>
+        <tr><td>Varianza</td><td><b>{{ '%.4f'|format(measures.variance) }}</b></td></tr>
+        <tr><td>Desv. estándar</td><td><b>{{ '%.4f'|format(measures.std) }}</b></td></tr>
+      </table>
+      {% else %}<p class="text-muted">Sin datos</p>{% endif %}
+    </div></div>
+  </div>
+  <div class="col-md-8">
+    <div class="card border-0 shadow-sm h-100"><div class="card-body">
+      <h6 class="text-muted">Tabla de frecuencias</h6>
+      <div class="table-responsive">
+        <table class="table table-sm">
+          <thead><tr><th>% de Alcohol</th><th>fa</th><th>fac</th><th>fr</th><th>%</th></tr></thead>
+          <tbody>{% for r in freq %}
+            <tr><td>{{r.intervalo}}</td><td>{{r.fa}}</td><td>{{r.fac}}</td><td>{{r.fr}}</td><td>{{r.pct}}</td></tr>
+          {% endfor %}</tbody>
+        </table>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+
+<div class="row g-3 mt-1">
+  <div class="col-md-6"><div class="card border-0 shadow-sm"><div class="card-body">{{ hist|safe }}</div></div></div>
+  <div class="col-md-6"><div class="card border-0 shadow-sm"><div class="card-body">{{ ctrl|safe }}</div></div></div>
+  <div class="col-md-6"><div class="card border-0 shadow-sm"><div class="card-body">{{ pareto|safe }}</div></div></div>
+  <div class="col-md-6"><div class="card border-0 shadow-sm"><div class="card-body">{{ ishikawa|safe }}</div></div></div>
+</div>
+
+<div class="card border-0 shadow-sm mt-3"><div class="card-body">
+  <h6 class="text-muted">Tabla de desviaciones (x̄ = {{ '%.3f'|format(mean) }})</h6>
+  <div class="table-responsive" style="max-height:260px">
+    <table class="table table-sm">
+      <thead><tr><th>xi</th><th>xi - x̄</th><th>(xi - x̄)²</th></tr></thead>
+      <tbody>{% for r in dev %}
+        <tr><td>{{r.xi}}</td><td>{{r.dev}}</td><td>{{r.dev2}}</td></tr>
+      {% endfor %}</tbody>
+    </table>
+  </div>
+</div></div>
+
+<div class="card border-0 shadow-sm mt-3"><div class="card-body">
+  <h6 class="text-muted">Comparación por tipo de cerveza</h6>
+  <table class="table table-sm">
+    <thead><tr><th>Tipo</th><th>N° lotes</th><th>Media %</th><th>Desviación estándar</th></tr></thead>
+    <tbody>{% for c in comparison %}
+      <tr><td>{{c.type}}</td><td>{{c.n}}</td>
+        <td>{{ '%.3f'|format(c.mean) }}</td><td>{{ '%.4f'|format(c.std) }}</td></tr>
+    {% endfor %}</tbody>
+  </table>
+</div></div>
+{% endblock %}

@@ -1,0 +1,27 @@
+:root{
+  --pqms-amber:#c47b1d;
+  --pqms-amber-dark:#9a5d10;
+  --pqms-cream:#fdf6ec;
+  --pqms-dark:#2a1c10;
+}
+body{background:var(--pqms-cream);font-family:'Segoe UI',system-ui,sans-serif;color:#2a1c10}
+.pqms-navbar{background:linear-gradient(90deg,var(--pqms-amber-dark),var(--pqms-amber))}
+.pqms-navbar .nav-link{color:#fff8ec!important;font-weight:500}
+.pqms-navbar .nav-link:hover{color:#fff!important;text-decoration:underline}
+.bg-pqms{background:var(--pqms-amber)!important;color:#fff}
+.btn-pqms{background:var(--pqms-amber);border-color:var(--pqms-amber);color:#fff;font-weight:600}
+.btn-pqms:hover{background:var(--pqms-amber-dark);border-color:var(--pqms-amber-dark);color:#fff}
+.login-wrap{min-height:90vh;background:radial-gradient(circle at top right,#fde7c4 0%,#fdf6ec 60%)}
+.login-card{width:420px;max-width:95vw;border-radius:18px}
+.brand-circle{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--pqms-amber),var(--pqms-amber-dark));color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:0 10px 30px rgba(196,123,29,.35)}
+.kpi-card{border-radius:14px}
+.kpi-icon{width:54px;height:54px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+.status-Aprobado{background:#198754;color:#fff}
+.status-Rechazado{background:#dc3545;color:#fff}
+.status-En_proceso{background:#ffc107;color:#000}
+.card{border-radius:14px}
+.traceability-flow{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.t-step{flex:1 1 150px;min-width:150px;background:var(--pqms-cream);border:1px solid #e9d8b8;border-radius:10px;padding:.75rem;display:flex;align-items:center;gap:.6rem}
+.t-step i{font-size:1.6rem;color:var(--pqms-amber)}
+.t-arrow{font-size:1.5rem;color:var(--pqms-amber)}
+.badge.bg-pqms{background:var(--pqms-amber)!important}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Capacitación — Aula Virtual</h2>
+{% if current_user.role == 'admin' %}
+<form method="post" action="{{ url_for('training.new_course') }}" class="row g-2 my-3">
+  <div class="col-md-3"><input name="title" class="form-control" placeholder="Título curso" required></div>
+  <div class="col-md-2"><input name="topic" class="form-control" placeholder="Tema"></div>
+  <div class="col-md-4"><input name="description" class="form-control" placeholder="Descripción"></div>
+  <div class="col-md-2"><input name="resource_url" class="form-control" placeholder="URL video/material"></div>
+  <div class="col-md-1"><button class="btn btn-pqms w-100">+</button></div>
+</form>
+{% endif %}
+
+<div class="row g-3">
+  {% for c in courses %}
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm h-100"><div class="card-body">
+      <span class="badge bg-pqms mb-2">{{c.topic}}</span>
+      <h5>{{c.title}}</h5>
+      <p class="text-muted small">{{c.description}}</p>
+      {% if c.resource_url %}<a href="{{c.resource_url}}" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="bi bi-play-circle"></i> Material</a>{% endif %}
+      <form method="post" action="{{ url_for('training.enroll', course_id=c.id) }}" class="d-inline">
+        <button class="btn btn-sm btn-pqms"><i class="bi bi-bookmark-plus"></i> Inscribirme</button>
+      </form>
+    </div></div>
+  </div>
+  {% endfor %}
+</div>
+
+<h4 class="mt-4">Seguimiento</h4>
+<table class="table">
+  <thead><tr><th>Usuario</th><th>Curso</th><th>Estado</th><th>Nota</th><th></th></tr></thead>
+  <tbody>{% for e in enrollments %}
+    <tr><td>{{e.user.full_name}}</td><td>{{e.course.title}}</td>
+      <td><span class="badge bg-info">{{e.status}}</span></td>
+      <td>{{e.score or '—'}}</td>
+      <td>{% if e.status != 'Completado' and (e.user_id == current_user.id or current_user.role == 'admin') %}
+        <form method="post" action="{{ url_for('training.complete', enrollment_id=e.id) }}" class="d-flex gap-1">
+          <input type="number" name="score" min="0" max="100" class="form-control form-control-sm" placeholder="Nota" required style="width:80px">
+          <button class="btn btn-sm btn-success">Completar</button>
+        </form>{% endif %}</td></tr>
+  {% else %}<tr><td colspan="5" class="text-center text-muted">Sin inscripciones</td></tr>{% endfor %}</tbody>
+</table>
+{% endblock %}

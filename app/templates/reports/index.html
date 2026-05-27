@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Reportes</h2>
+<div class="row g-3 mt-2">
+  <div class="col-md-4"><div class="card border-0 shadow-sm h-100"><div class="card-body text-center">
+    <i class="bi bi-file-earmark-excel fs-1 text-success"></i>
+    <h5 class="mt-2">Producción (Excel)</h5>
+    <a class="btn btn-pqms" href="{{ url_for('reports.excel_production') }}"><i class="bi bi-download"></i> Descargar</a>
+  </div></div></div>
+  <div class="col-md-4"><div class="card border-0 shadow-sm h-100"><div class="card-body text-center">
+    <i class="bi bi-file-earmark-pdf fs-1 text-danger"></i>
+    <h5 class="mt-2">Estadístico (PDF)</h5>
+    <a class="btn btn-pqms" href="{{ url_for('reports.pdf_statistics') }}"><i class="bi bi-download"></i> Descargar</a>
+  </div></div></div>
+  <div class="col-md-4"><div class="card border-0 shadow-sm h-100"><div class="card-body text-center">
+    <i class="bi bi-file-earmark-pdf fs-1 text-danger"></i>
+    <h5 class="mt-2">ISO 9000 (PDF)</h5>
+    <a class="btn btn-pqms" href="{{ url_for('reports.pdf_iso') }}"><i class="bi bi-download"></i> Descargar</a>
+  </div></div></div>
+</div>
+{% endblock %}

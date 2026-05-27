@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-1">Dashboard de Calidad</h2>
+<p class="text-muted">Indicadores en tiempo real de la producción cervecera</p>
+
+<form class="row g-2 mb-4">
+  <div class="col-md-3"><select class="form-select" name="beer_type">
+    <option value="">Tipo de cerveza (todos)</option>
+    {% for t in types %}<option value="{{t}}" {% if t==beer %}selected{% endif %}>{{t}}</option>{% endfor %}
+  </select></div>
+  <div class="col-md-3"><select class="form-select" name="status">
+    <option value="">Estado (todos)</option>
+    {% for s in ['En proceso','Aprobado','Rechazado'] %}<option {% if s==status %}selected{% endif %}>{{s}}</option>{% endfor %}
+  </select></div>
+  <div class="col-md-3"><select class="form-select" name="operator">
+    <option value="">Operario (todos)</option>
+    {% for o in operators %}<option value="{{o.id}}" {% if operator==o.id|string %}selected{% endif %}>{{o.full_name}}</option>{% endfor %}
+  </select></div>
+  <div class="col-md-3 d-grid"><button class="btn btn-pqms"><i class="bi bi-funnel"></i> Filtrar</button></div>
+</form>
+
+<div class="row g-3">
+  {% set cards = [
+    ('Lotes totales', kpis.total, 'bi-box-seam', 'bg-pqms'),
+    ('% Lotes defectuosos', kpis.pct_defective ~ '%', 'bi-exclamation-triangle', 'bg-danger'),
+    ('Nivel de cumplimiento', kpis.compliance ~ '%', 'bi-check-circle', 'bg-success'),
+    ('Promedio alcohol', kpis.avg_alcohol ~ '%', 'bi-droplet-half', 'bg-warning'),
+    ('Variabilidad (σ)', kpis.variability, 'bi-activity', 'bg-info'),
+    ('Reclamos', kpis.claims, 'bi-megaphone', 'bg-secondary'),
+    ('Costos calidad', 'S/. ' ~ kpis.cost_quality, 'bi-cash-stack', 'bg-dark'),
+    ('En proceso', kpis.in_process, 'bi-hourglass-split', 'bg-pqms')
+  ] %}
+  {% for label, val, icon, bg in cards %}
+  <div class="col-md-3"><div class="card kpi-card border-0 shadow-sm h-100">
+    <div class="card-body d-flex align-items-center">
+      <div class="kpi-icon {{bg}} text-white me-3"><i class="bi {{icon}}"></i></div>
+      <div><div class="text-muted small">{{label}}</div><div class="fs-4 fw-bold">{{val}}</div></div>
+    </div></div></div>
+  {% endfor %}
+</div>
+
+<div class="card border-0 shadow-sm mt-4">
+  <div class="card-body">
+    <h5 class="mb-3">Últimos lotes</h5>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light"><tr>
+          <th>Código</th><th>Fecha</th><th>Tipo</th><th>Operario</th><th>% Alcohol</th><th>Estado</th>
+        </tr></thead>
+        <tbody>
+          {% for b in batches %}
+          <tr><td><a href="{{ url_for('production.detail', batch_id=b.id) }}">{{b.code}}</a></td>
+              <td>{{b.date}}</td><td>{{b.beer_type}}</td>
+              <td>{{b.operator.full_name}}</td><td>{{b.alcohol_pct}}%</td>
+              <td><span class="badge status-{{b.status|replace(' ','_')}}">{{b.status}}</span></td></tr>
+          {% else %}
+          <tr><td colspan="6" class="text-center text-muted">Sin datos</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

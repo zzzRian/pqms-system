@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Reclamos de Clientes</h2>
+<form method="post" action="{{ url_for('claims.new') }}" class="row g-2 my-3">
+  <div class="col-md-3"><select name="batch_id" class="form-select" required>
+    <option value="">Lote relacionado</option>
+    {% for b in batches %}<option value="{{b.id}}">{{b.code}} ({{b.beer_type}})</option>{% endfor %}
+  </select></div>
+  <div class="col-md-3"><input name="customer" class="form-control" placeholder="Cliente" required></div>
+  <div class="col-md-5"><input name="description" class="form-control" placeholder="Descripción" required></div>
+  <div class="col-md-1"><button class="btn btn-pqms w-100">+</button></div>
+</form>
+<table class="table align-middle">
+  <thead><tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Lote</th><th>Descripción</th><th>Estado</th>{% if current_user.role in ['admin','supervisor'] %}<th>Actualizar</th>{% endif %}</tr></thead>
+  <tbody>{% for c in claims %}
+    <tr><td>{{c.id}}</td><td>{{c.created_at.strftime('%Y-%m-%d')}}</td>
+      <td>{{c.customer}}</td><td>{{c.batch.code if c.batch else '—'}}</td>
+      <td>{{c.description}}</td>
+      <td><span class="badge bg-warning text-dark">{{c.status}}</span></td>
+      {% if current_user.role in ['admin','supervisor'] %}
+      <td><form method="post" action="{{ url_for('claims.update_status', cid=c.id) }}" class="d-flex gap-1">
+        <select name="status" class="form-select form-select-sm">
+          {% for s in statuses %}<option {% if s==c.status %}selected{% endif %}>{{s}}</option>{% endfor %}
+        </select><button class="btn btn-sm btn-pqms">OK</button></form></td>
+      {% endif %}
+    </tr>
+  {% else %}<tr><td colspan="7" class="text-center text-muted">Sin reclamos</td></tr>{% endfor %}</tbody>
+</table>
+{% endblock %}

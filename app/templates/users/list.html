@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Gestión de Usuarios</h2>
+<button class="btn btn-pqms mb-3" data-bs-toggle="modal" data-bs-target="#newUser"><i class="bi bi-plus-lg"></i> Nuevo usuario</button>
+
+<table class="table">
+  <thead><tr><th>Usuario</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Activo</th><th></th></tr></thead>
+  <tbody>{% for u in users %}
+    <tr><td>{{u.username}}</td><td>{{u.full_name}}</td><td>{{u.email}}</td>
+      <td><span class="badge bg-pqms">{{u.role}}</span></td>
+      <td>{% if u.active %}<span class="text-success">Sí</span>{% else %}<span class="text-danger">No</span>{% endif %}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#edit{{u.id}}"><i class="bi bi-pencil"></i></button>
+        <form method="post" action="{{ url_for('users.delete_user', user_id=u.id) }}" class="d-inline" onsubmit="return confirm('¿Eliminar usuario?')">
+          <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></form>
+      </td></tr>
+    <div class="modal fade" id="edit{{u.id}}"><div class="modal-dialog"><div class="modal-content">
+      <form method="post" action="{{ url_for('users.edit_user', user_id=u.id) }}">
+      <div class="modal-header"><h5>Editar {{u.username}}</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <input class="form-control mb-2" name="full_name" value="{{u.full_name}}" required>
+        <input class="form-control mb-2" name="email" value="{{u.email}}" required>
+        <select class="form-select mb-2" name="role">{% for r in roles %}<option {% if r==u.role %}selected{% endif %}>{{r}}</option>{% endfor %}</select>
+        <input class="form-control mb-2" type="password" name="password" placeholder="Nueva contraseña (opcional)">
+        <div class="form-check"><input type="checkbox" class="form-check-input" name="active" {% if u.active %}checked{% endif %}> <label>Activo</label></div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-pqms">Guardar</button></div>
+      </form></div></div></div>
+  {% endfor %}</tbody>
+</table>
+
+<h4 class="mt-4">Bitácora del sistema</h4>
+<div class="card border-0 shadow-sm"><div class="card-body" style="max-height:400px;overflow:auto">
+<table class="table table-sm">
+  <thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th></tr></thead>
+  <tbody>{% for l in logs %}
+    <tr><td>{{l.created_at.strftime('%Y-%m-%d %H:%M')}}</td>
+      <td>{{l.user.username if l.user else '—'}}</td><td>{{l.action}}</td></tr>
+  {% endfor %}</tbody>
+</table>
+</div></div>
+
+<div class="modal fade" id="newUser"><div class="modal-dialog"><div class="modal-content">
+  <form method="post" action="{{ url_for('users.create_user') }}">
+  <div class="modal-header"><h5>Nuevo usuario</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input class="form-control mb-2" name="username" placeholder="Usuario" required>
+    <input class="form-control mb-2" name="full_name" placeholder="Nombre completo" required>
+    <input class="form-control mb-2" type="email" name="email" placeholder="Correo" required>
+    <select class="form-select mb-2" name="role">{% for r in roles %}<option>{{r}}</option>{% endfor %}</select>
+    <input class="form-control mb-2" type="password" name="password" placeholder="Contraseña" required>
+  </div>
+  <div class="modal-footer"><button class="btn btn-pqms">Crear</button></div>
+  </form>
+</div></div></div>
+{% endblock %}

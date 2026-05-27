@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Trazabilidad de Lotes</h2>
+<form class="row g-2 my-3">
+  <div class="col-md-4"><input name="code" class="form-control" value="{{code}}" placeholder="Código de lote (ej. L-001)"></div>
+  <div class="col-md-2"><button class="btn btn-pqms w-100"><i class="bi bi-search"></i> Rastrear</button></div>
+</form>
+
+{% if code and not batch %}<div class="alert alert-warning">No se encontró el lote {{code}}</div>{% endif %}
+
+{% if batch %}
+<div class="card border-0 shadow-sm mb-4"><div class="card-body">
+  <h5 class="mb-3">Lote {{batch.code}}</h5>
+  <div class="traceability-flow">
+    <div class="t-step"><i class="bi bi-box"></i><div><b>Lote</b><br>{{batch.code}}</div></div>
+    <div class="t-arrow">→</div>
+    <div class="t-step"><i class="bi bi-person-gear"></i><div><b>Operario</b><br>{{batch.operator.full_name}}</div></div>
+    <div class="t-arrow">→</div>
+    <div class="t-step"><i class="bi bi-calendar"></i><div><b>Fecha</b><br>{{batch.date}}</div></div>
+    <div class="t-arrow">→</div>
+    <div class="t-step"><i class="bi bi-droplet"></i><div><b>Calidad</b><br>{{batch.alcohol_pct}}% · {{batch.status}}</div></div>
+    <div class="t-arrow">→</div>
+    <div class="t-step"><i class="bi bi-megaphone"></i><div><b>Reclamos</b><br>{{batch.claims|length}}</div></div>
+  </div>
+  {% if batch.claims %}
+  <h6 class="mt-4">Reclamos asociados</h6>
+  <ul>{% for c in batch.claims %}<li>{{c.customer}} — {{c.description}} <span class="badge bg-warning text-dark">{{c.status}}</span></li>{% endfor %}</ul>
+  {% endif %}
+</div></div>
+{% endif %}
+
+<h5>Lotes recientes</h5>
+<table class="table table-sm">
+  <thead><tr><th>Código</th><th>Fecha</th><th>Tipo</th><th>Operario</th><th>Estado</th></tr></thead>
+  <tbody>{% for b in batches %}
+    <tr><td><a href="?code={{b.code}}">{{b.code}}</a></td><td>{{b.date}}</td>
+      <td>{{b.beer_type}}</td><td>{{b.operator.full_name}}</td>
+      <td><span class="badge status-{{b.status|replace(' ','_')}}">{{b.status}}</span></td></tr>
+  {% endfor %}</tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,38 @@
+<nav class="navbar navbar-expand-lg pqms-navbar shadow-sm">
+  <div class="container-fluid px-md-5">
+    <a class="navbar-brand fw-bold text-white" href="{{ url_for('dashboard.home') }}">
+      <i class="bi bi-cup-hot-fill"></i> PERUVIAM <span class="badge bg-light text-dark ms-1">PQMS</span>
+    </a>
+    <button class="navbar-toggler text-white" data-bs-toggle="collapse" data-bs-target="#nv">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nv">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard.home') }}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('production.list_batches') }}"><i class="bi bi-clipboard-data"></i> Producción</a></li>
+        {% if current_user.role in ['admin','supervisor'] %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('stats.dashboard') }}"><i class="bi bi-graph-up"></i> Control Estadístico</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('iso.index') }}"><i class="bi bi-file-earmark-check"></i> ISO 9000</a></li>
+        {% endif %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('training.index') }}"><i class="bi bi-mortarboard"></i> Capacitación</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('claims.index') }}"><i class="bi bi-megaphone"></i> Reclamos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('reports.index') }}"><i class="bi bi-file-earmark-bar-graph"></i> Reportes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('traceability.index') }}"><i class="bi bi-search"></i> Trazabilidad</a></li>
+        {% if current_user.role == 'admin' %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('users.list_users') }}"><i class="bi bi-people"></i> Usuarios</a></li>
+        {% endif %}
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle"></i> {{ current_user.full_name }}
+            <span class="badge bg-warning text-dark ms-1">{{ current_user.role }}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
